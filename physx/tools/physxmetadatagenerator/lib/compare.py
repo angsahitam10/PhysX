@@ -91,27 +91,30 @@ def _read_file_content(filePath):
 	lines = []
 	try:
 		with open(filePath, "r") as file:
-			for line in file:
-				lines.append(line.rstrip())
+			lines.extend(line.rstrip() for line in file)
 	except:
 		print("issue with reading file:", filePath)
-	
+
 	return lines
 	
 def _checkFileExistence(candidateDir, referenceDir):
-	candidateSet = set([os.path.relpath(f, candidateDir) for f in utils.list_autogen_files(candidateDir)])
-	referenceSet = set([os.path.relpath(f, referenceDir) for f in utils.list_autogen_files(referenceDir)])
-	
-	missingSet = referenceSet - candidateSet
-	if missingSet:
+	candidateSet = {
+		os.path.relpath(f, candidateDir)
+		for f in utils.list_autogen_files(candidateDir)
+	}
+	referenceSet = {
+		os.path.relpath(f, referenceDir)
+		for f in utils.list_autogen_files(referenceDir)
+	}
+
+	if missingSet := referenceSet - candidateSet:
 		print("the following files are missing from the candidates:\n", "\n".join(missingSet))
 		return False
-		
-	excessSet = candidateSet - referenceSet
-	if excessSet:
+
+	if excessSet := candidateSet - referenceSet:
 		print("too many candidate files:\n", "\n".join(excessSet))
 		return False
-	
+
 	return True
 
 

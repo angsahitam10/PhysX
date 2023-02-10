@@ -60,10 +60,7 @@ def try_checkout_files(files):
 
 # check files writability
 def check_files_writable(files):
-	for file in files:
-		if not os.access(file, os.W_OK):
-			return False
-	return True
+	return all(os.access(file, os.W_OK) for file in files)
 
 # find a root directory containing a known directory (as a hint)
 def find_root_path(startDir, containedDir):
